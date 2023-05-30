@@ -1,0 +1,47 @@
+ATTENDANCE TRACKING.
+
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+# Initialize Firebase credentials
+cred = credentials.Certificate('path/to/serviceAccountKey.json')
+firebase_admin.initialize_app(cred)
+
+# Initialize Firestore database
+db = firestore.client()
+
+def mark_attendance(student_id):
+    # Get the current date and time
+    import datetime
+    now = datetime.datetime.now()
+    date = now.strftime("%Y-%m-%d")
+    time = now.strftime("%H:%M:%S")
+
+    # Create a new attendance document
+    attendance_ref = db.collection('attendance').document()
+    attendance_ref.set({
+        'student_id': student_id,
+        'date': date,
+        'time': time
+    })
+    print("Attendance marked successfully.")
+
+def retrieve_attendance(date):
+    # Retrieve attendance records for a specific date
+    attendance_ref = db.collection('attendance').where('date', '==', date).get()
+    for doc in attendance_ref:
+        print(f"Student ID: {doc.get('student_id')}")
+        print(f"Time: {doc.get('time')}")
+        print("---------------------")
+
+# Example usage
+student_id = "12345678"
+mark_attendance(student_id)
+
+# Retrieve attendance records for a specific date
+attendance_date = "2023-05-17"
+retrieve_attendance(attendance_date)
+
+
+
